@@ -13,8 +13,8 @@ import (
 	"time"
 )
 
-const LIMIT = 40000
-const HOST = "192.168.10.172"
+const LIMIT = 35000
+const HOST = "192.168.10.165"
 
 func main() {
 	u := url.URL{Scheme: "ws", Host: HOST + ":8080", Path: "/echo"}
