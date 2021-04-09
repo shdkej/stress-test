@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"io/ioutil"
@@ -13,11 +14,15 @@ import (
 	"time"
 )
 
-const LIMIT = 35000
-const HOST = "192.168.10.165"
+var (
+	limit   = flag.Int("l", 10, "limit of fconnection")
+	port    = flag.String("p", "8080", "listen address")
+	host_ip = flag.String("h", "localhost", "host ip address")
+)
 
 func main() {
-	u := url.URL{Scheme: "ws", Host: HOST + ":8080", Path: "/echo"}
+	flag.Parse()
+	u := url.URL{Scheme: "ws", Host: *host_ip + ":8080", Path: "/echo"}
 	log.Printf("connecting to %s", u.String())
 	start := time.Now()
 
@@ -27,7 +32,7 @@ func main() {
 	elapsed := time.Since(start)
 	fmt.Println("Connect with goroutines:", count, elapsed)
 
-	res, err := http.Get("http://" + HOST + ":8080/check")
+	res, err := http.Get("http://" + *host_ip + ":8080/check")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -42,9 +47,9 @@ func main() {
 func connectAsyncWithLimit(url string) int {
 	count := 0
 	wg := sync.WaitGroup{}
-	wg.Add(LIMIT)
+	wg.Add(*limit)
 
-	for i := 0; i < LIMIT; i++ {
+	for i := 0; i < *limit; i++ {
 		go func() {
 			loadTimer(url)
 			wg.Done()
@@ -100,7 +105,7 @@ func loadTimer(url string) {
 	defer c.Close()
 
 	done := make(chan struct{})
-	err = c.WriteMessage(websocket.TextMessage, []byte("write"))
+	err = c.WriteMessage(websocket.TextMessage, []byte(`1`))
 
 	go func() {
 		defer close(done)
@@ -113,7 +118,7 @@ func loadTimer(url string) {
 		}
 	}()
 
-	timer := time.NewTimer(120 * time.Second)
+	timer := time.NewTimer(300 * time.Second)
 	defer timer.Stop()
 
 	for {

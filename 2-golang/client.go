@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -9,34 +11,23 @@ import (
 	"time"
 )
 
-const HOST_IP = "192.168.10.165"
-const HOST_PORT = "8080"
-
-//const HOST_IP = "193.123.251.27"
-const LIMIT = 35000
+var (
+	limit   = flag.Int("l", 10, "limit of fconnection")
+	port    = flag.String("p", "8080", "listen address")
+	host_ip = flag.String("h", "localhost", "host ip address")
+)
 
 func main() {
+	flag.Parse()
 	start := time.Now()
+	ch := make(chan int, *limit)
 
 	fmt.Println("start")
-	//count1 := connectWithSync("8080")
-	//elapsed1 := time.Since(start)
-	//fmt.Println("Connect Synconisly:", count1, elapsed1)
 
-	//count := 0
-	//count5 := connectAsyncWithoutWG(count, "8080")
-	//elapsed5 := time.Since(start)
-	//fmt.Println("Connect without wait group:", count5, elapsed5)
+	count2 := connectLongTime(*port, ch)
+	<-ch
 
-	//start = time.Now()
-	//connectAsyncWithOne()
-
-	fmt.Println("start2")
-	start = time.Now()
-	count2 := connectLongTime(HOST_PORT)
-
-	time.Sleep(30 * time.Second)
-	value := GetValue(HOST_PORT)
+	value := GetValue(*port)
 	fmt.Println("Get Value:", value)
 
 	elapsed2 := time.Since(start)
@@ -45,7 +36,7 @@ func main() {
 
 func connectWithSync(port string) int {
 	count := 0
-	for i := 0; i < LIMIT; i++ {
+	for i := 0; i < *limit; i++ {
 		if load(port) == "hello" {
 			count += 1
 		}
@@ -71,9 +62,9 @@ func connectAsyncWithOne(port string) int {
 func connectAsyncWithLimit(port string) int {
 	count := 0
 	wg := sync.WaitGroup{}
-	wg.Add(LIMIT)
+	wg.Add(*limit)
 
-	for i := 0; i < LIMIT; i++ {
+	for i := 0; i < *limit; i++ {
 		go func() {
 			if load(port) == "hello" {
 				count += 1
@@ -89,7 +80,7 @@ func connectAsyncDifferentAdd(port string) int {
 	count := 0
 	wg := sync.WaitGroup{}
 
-	for i := 0; i < LIMIT; i++ {
+	for i := 0; i < *limit; i++ {
 		wg.Add(1)
 		go func() {
 			if load(port) == "hello" {
@@ -103,7 +94,7 @@ func connectAsyncDifferentAdd(port string) int {
 }
 
 func connectAsyncWithoutWG(count int, port string) int {
-	for i := 0; i < LIMIT; i++ {
+	for i := 0; i < *limit; i++ {
 		go func() {
 			if load(port) == "hello" {
 				count += 1
@@ -113,18 +104,19 @@ func connectAsyncWithoutWG(count int, port string) int {
 	return count
 }
 
-func connectLongTime(port string) int {
+func connectLongTime(port string, ch chan int) int {
 	count := 0
-	for i := 0; i < LIMIT; i++ {
-		go func() {
+	for i := 0; i < *limit; i++ {
+		go func(i int) {
 			loadLong(port)
-		}()
+			ch <- i
+		}(i)
 	}
 	return count
 }
 
 func load(port string) string {
-	res, err := http.Get("http://" + HOST_IP + ":" + port)
+	res, err := http.Get("http://" + *host_ip + ":" + port)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -137,7 +129,11 @@ func load(port string) string {
 }
 
 func loadLong(port string) {
-	res, err := http.Get("http://" + HOST_IP + ":" + port)
+	res, err := http.Get("http://" + *host_ip + ":" + port)
+	if err != nil {
+		log.Fatal(err)
+	}
+	io.copy(ioutil.Discard, res.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -146,7 +142,7 @@ func loadLong(port string) {
 }
 
 func GetValue(port string) string {
-	res, err := http.Get("http://" + HOST_IP + ":" + port + "/value")
+	res, err := http.Get("http://" + *host_ip + ":" + port + "/value")
 	if err != nil {
 		log.Fatal(err)
 	}

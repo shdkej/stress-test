@@ -8,3 +8,5 @@ sysctl -w net.core.somaxconn="10000"
 sysctl -w net.core.netdev_max_backlog=2000
 sysctl -w net.ipv4.tcp_max_syn_backlog=2048
 ifconfig lo txqueuelen 5000
+
+sysctl -w net.core.rmem_default=
