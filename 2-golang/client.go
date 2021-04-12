@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -133,7 +132,6 @@ func loadLong(port string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	io.copy(ioutil.Discard, res.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
