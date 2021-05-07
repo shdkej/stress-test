@@ -1,19 +1,19 @@
 {
-  "name": "node-react-docker-compose",
-  "version": "1.0.0",
-  "description": "A reference for running a node server and create-react-app app via docker-compose.",
-  "main": "src/index.js",
-  "scripts": {
-    "start": "node src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Peter Coles",
-  "license": "MIT",
-  "dependencies": {
-    "express": "^4.17.1",
-    "redis": "^3.1.0"
-  },
-  "devDependencies": {
-    "nodemon": "^1.19.0"
-  }
+    "name": "node-react-docker-compose",
+    "version": "1.0.0",
+    "description": "A reference for running a node server and create-react-app app via docker-compose.",
+    "main": "src/index.js",
+    "scripts": {
+        "start": "node --nouse-idle-notification--expose-gc--max-new-space-size=2048--max-old-space-size=8192 src/index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Peter Coles",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1",
+        "redis": "^3.1.0"
+    },
+    "devDependencies": {
+        "nodemon": "^1.19.0"
+    }
 }
