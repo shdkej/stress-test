@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -34,7 +35,10 @@ func main() {
 }
 
 func (cs *Counter) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	mutex := &sync.Mutex{}
+	mutex.Lock()
 	cs.ch <- 1
+	mutex.Unlock()
 	log.Printf("%d", cs.value)
 }
 
