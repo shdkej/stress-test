@@ -35,6 +35,7 @@ func main() {
 
 func (cs *Counter) HealthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	cs.ch <- 1
+	log.Printf("%d", cs.value)
 }
 
 func (cs *Counter) GetValueHandler(w http.ResponseWriter, r *http.Request) {

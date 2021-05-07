@@ -1,5 +1,5 @@
 IMAGE_NAME = "ubuntu/trusty64"
-N = 3
+N = 2
 
 Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |v|

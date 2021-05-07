@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: stress-test
-        image: stress-test:latest
+        image: shdkej/stress-server:latest
         ports:
         - containerPort: 8080
         resources:
@@ -22,6 +22,13 @@ spec:
             cpu: 500m
           requests:
             cpu: 200m
+        volumeMounts:
+          - mountPath: "/test"
+            name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            path: /test
 ---
 
 apiVersion: v1
@@ -31,10 +38,9 @@ metadata:
   labels:
     run: stress-test
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - port: 8080
     targetPort: 8080
-    nodePort: 30080
   selector:
     run: stress-test

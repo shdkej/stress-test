@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/websocket"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/websocket"
 )
 
 type Counter struct {
