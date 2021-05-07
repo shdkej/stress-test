@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: stress-server-ingress
+spec:
+  rules:
+  - host: stress.minikube
+    http:
+      paths:
+      - path: /ss
+        backend:
+          serviceName: stress-test
+          servicePort: http
