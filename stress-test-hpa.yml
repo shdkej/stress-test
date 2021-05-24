@@ -1,55 +1,10 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: stress-test
-spec:
-  selector:
-    matchLabels:
-      run: stress-test
-  replicas: 3
-  template:
-    metadata:
-      labels:
-        run: stress-test
-    spec:
-      containers:
-      - name: stress-test
-        image: shdkej/stress-server
-        ports:
-        - containerPort: 8080
-        resources:
-          limits:
-            cpu: 500m
-            memory: 200Mi
-          requests:
-            cpu: 200m
-            memory: 100Mi
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: stress-test
-  labels:
-    run: stress-test
-spec:
-  type: NodePort
-  ports:
-  - port: 8080
-    targetPort: 8080
-    nodePort: 30080
-  selector:
-    run: stress-test
-
----
-
 apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: hpa-example
 spec:
-  maxReplicas: 8
-  minReplicas: 1
+  maxReplicas: 16
+  minReplicas: 4
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
@@ -61,3 +16,38 @@ spec:
       target:
         type: Utilization
         averageValue: 100Mi
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 10
+
+---
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-traefik
+  namespace: kube-system
+spec:
+  maxReplicas: 16
+  minReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: traefik
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageValue: 100Mi
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 10
+

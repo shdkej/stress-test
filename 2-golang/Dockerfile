@@ -1,6 +1,6 @@
-FROM golang:1.13
+FROM golang:1.14-alpine
 WORKDIR /src
 ADD server.go server.go
 RUN go build server.go
-CMD ["./server"]
 EXPOSE 8080
+CMD ["./server"]

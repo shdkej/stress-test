@@ -7,7 +7,7 @@ spec:
   - host: stress.minikube
     http:
       paths:
-      - path: /ss
+      - path: /
         backend:
           serviceName: stress-test
-          servicePort: http
+          servicePort: 8080
