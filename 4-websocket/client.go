@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gorilla/websocket"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,6 +11,8 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -22,7 +23,7 @@ var (
 
 func main() {
 	flag.Parse()
-	u := url.URL{Scheme: "ws", Host: *host_ip + ":8080", Path: "/echo"}
+	u := url.URL{Scheme: "ws", Host: *host_ip + ":" + *port, Path: "/echo"}
 	log.Printf("connecting to %s", u.String())
 	start := time.Now()
 
@@ -32,7 +33,7 @@ func main() {
 	elapsed := time.Since(start)
 	fmt.Println("Connect with goroutines:", count, elapsed)
 
-	res, err := http.Get("http://" + *host_ip + ":8080/check")
+	res, err := http.Get("http://" + *host_ip + ":" + *port + "/check")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,0 +1,11 @@
+version: "2"
+services:
+  app:
+    image: golang:1.16.6
+    volumes:
+      - ./:/app
+    tty: true
+    command: /app/server
+    ports:
+      - 8081:8080
+    #stdin_open: true

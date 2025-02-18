@@ -135,7 +135,7 @@ func loadLong(port string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 	res.Body.Close()
 }
 
